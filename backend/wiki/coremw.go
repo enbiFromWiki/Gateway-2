@@ -1,4 +1,4 @@
-package mw
+package wiki
 
 import (
 	"fmt"
@@ -8,11 +8,28 @@ import (
 )
 
 type Client struct {
-	HTTPclient    *http.Client
-	UserAgent     string
-	DefaultUrl    string
-	Formatversion int8
-	User          string
+	httpc         *http.Client
+	defaultUrl    string
+	userAgent     string
+	format        string
+	formatversion uint8
+}
+
+func New(ua string, url string, format string, fv uint8) *Client {
+	agent := ""
+	if len(ua) == 0 {
+		agent = "User:enbi's test script built in Go"
+	} else {
+		agent = ua
+	}
+
+	return &Client{
+		httpc:         &http.Client{},
+		defaultUrl:    url,
+		userAgent:     agent,
+		format:        format,
+		formatversion: fv,
+	}
 }
 
 func (client *Client) Get(params map[string]string) ([]byte, error) {
@@ -20,10 +37,11 @@ func (client *Client) Get(params map[string]string) ([]byte, error) {
 	// if user := client.User; len(user) != 0 {
 	// 	params["assertuser"] = user
 	// }
+	params["format"] = "json"
 
 	fmt.Println("Request sent")
 
-	url := client.DefaultUrl + "?" + MapToQueryParams(params)
+	url := client.defaultUrl + "?" + MapToQueryParams(params)
 
 	fmt.Println(url)
 
@@ -33,7 +51,7 @@ func (client *Client) Get(params map[string]string) ([]byte, error) {
 		panic(err)
 	}
 
-	if agent := client.UserAgent; len(agent) != 0 {
+	if agent := client.userAgent; len(agent) != 0 {
 		req.Header.Set("User-Agent", agent)
 	} else {
 		req.Header.Set("User-Agent", "User:enbi's test script")
@@ -43,7 +61,7 @@ func (client *Client) Get(params map[string]string) ([]byte, error) {
 
 	req.Header.Set("User-Agent", "User:enbi's test script")
 
-	resp, err := client.HTTPclient.Do(req)
+	resp, err := client.httpc.Do(req)
 
 	if err != nil {
 		return nil, err
