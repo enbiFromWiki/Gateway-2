@@ -1,0 +1,1 @@
+https://meta.wikimedia.org/w/rest.php/oauth2/authorize?client_id=a1ccc2fee4803887ae7f39acee5ed81d&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fcallback&response_type=code&scope=basic+edit&state=random-state-string

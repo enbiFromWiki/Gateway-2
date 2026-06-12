@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -27,6 +28,7 @@ var oauthConfig = &oauth2.Config{
 
 func Login(c *gin.Context) {
 	url := oauthConfig.AuthCodeURL("random-state-string")
+	fmt.Println(url)
 	c.Redirect(302, url)
 }
 
