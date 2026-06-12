@@ -13,12 +13,13 @@ import (
 )
 
 var oauthConfig = &oauth2.Config{
-	ClientID:     "a1ccc2fee4803887ae7f39acee5ed81d",
-	ClientSecret: "53b966b3aa43726e0a5ea7d05627a396b1c8e990",
+	ClientID:     "c873b63b13b3aafdbcebe29eb273e83d",
+	ClientSecret: "d358df7e6a7712986cd499525d1f39d2d0485eef",
 	RedirectURL:  "http://localhost:8080/auth/callback",
 	Scopes: []string{
 		"basic",
-		"edit", // not a clue what should be here.
+		"editpage",
+		"rollback",
 	},
 	Endpoint: oauth2.Endpoint{
 		AuthURL:  "https://meta.wikimedia.org/w/rest.php/oauth2/authorize",
