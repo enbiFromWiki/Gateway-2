@@ -22,7 +22,7 @@ var oauthConfig = &oauth2.Config{
 		"rollback",
 	},
 	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://meta.wikimedia.org/w/rest.php/oauth2/authorize",
+		AuthURL:  "https://meta.wikimedia.org/wiki/Special:OAuth/approve",
 		TokenURL: "https://meta.wikimedia.org/w/rest.php/oauth2/access_token",
 	},
 }
