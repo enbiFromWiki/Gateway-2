@@ -12,7 +12,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/login", auth.Login)
-	r.GET("/auth/callback", auth.Login)
+	r.GET("/auth/callback", auth.Callback)
 	r.GET("/call", auth.ApiTest)
 
 	r.Run("127.0.0.1:8080")
