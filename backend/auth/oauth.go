@@ -2,7 +2,10 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -28,11 +31,11 @@ func Login(c *gin.Context) {
 }
 
 func Callback(c *gin.Context) {
-	ctx := context.WithValue(
-		context.Background(),
-		oauth2.HTTPClient,
-		&http.Client{},
-	)
+	// ctx := context.WithValue(
+	// 	context.Background(),
+	// 	oauth2.HTTPClient,
+	// 	&http.Client{},
+	// )
 	code := c.Query("code")
 
 	if code == "" {
@@ -40,16 +43,35 @@ func Callback(c *gin.Context) {
 		return
 	}
 
-	token, err := oauthConfig.Exchange(ctx, code)
+	// token, err := oauthConfig.Exchange(ctx, code) lol this just doesnt work
+
+	data := url.Values{}
+	data.Set("grant_type", "authorization_code")
+	data.Set("code", code)
+	data.Set("redirect_uri", "http://localhost:8080/auth/callback")
+
+	req, _ := http.NewRequest("POST",
+		"https://meta.wikimedia.org/w/rest.php/oauth2/access_token",
+		strings.NewReader(data.Encode()),
+	)
+
+	req.SetBasicAuth(oauthConfig.ClientID, oauthConfig.ClientSecret)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := http.DefaultClient.Do(req)
+
 	if err != nil {
-		c.String(500, "Token exchange failed: %t", err)
+		c.String(500, "Token exchange failed: %t", err.Error())
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"access_token": token.AccessToken,
-		"token_type":   token.TokenType,
-	})
+	defer res.Body.Close()
+
+	var result map[string]any
+
+	json.NewDecoder(res.Body).Decode(&result)
+
+	c.JSON(200, result)
 }
 
 func ApiTest(c *gin.Context) {
