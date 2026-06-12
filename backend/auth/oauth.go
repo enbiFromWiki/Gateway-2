@@ -28,7 +28,7 @@ var oauthConfig = &oauth2.Config{
 }
 
 func Login(c *gin.Context) {
-	url := oauthConfig.AuthCodeURL("random-state-string")
+	url := oauthConfig.AuthCodeURL("random-state-string") + "&oauth_version=2"
 	fmt.Println(url)
 	c.Redirect(302, url)
 }
