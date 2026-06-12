@@ -2,6 +2,7 @@ package eventstream
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -30,6 +31,21 @@ func StartWMStream() {
 		if !strings.HasPrefix(line, "data: ") {
 			continue
 		}
-		fmt.Println(line)
+
+		strippedLine := strings.TrimPrefix(line, "data: ")
+
+		// Start of data processing
+
+		var data map[string]any
+
+		err := json.Unmarshal([]byte(strippedLine), &data)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if data["log_type"] == "newusers" {
+			fmt.Println(data["user"])
+		}
+		// fmt.Println(line)
 	}
 }
