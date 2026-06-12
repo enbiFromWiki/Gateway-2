@@ -2,19 +2,22 @@ package auth
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
+	"crypto/rand"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 )
 
 var oauthConfig = &oauth2.Config{
-	ClientID:     "c873b63b13b3aafdbcebe29eb273e83d",
-	ClientSecret: "d358df7e6a7712986cd499525d1f39d2d0485eef",
+	ClientID:     "074bc5c055a61844e6fdd4f91d7ef345",
+	ClientSecret: "fa7f86af755ccdf76aade8c6f7b953dad4bc2e79",
 	RedirectURL:  "http://localhost:8080/auth/callback",
 	Scopes: []string{
 		"basic",
@@ -27,8 +30,33 @@ var oauthConfig = &oauth2.Config{
 	},
 }
 
+// func Login (*gin.Context) {
+// 	url, _ := url.Parse("https://meta.wikimedia.org/wiki/Special:OAuth/approve")
+// 	query := url.Query()
+// 	query.Set("returnto", "http://localhost:8080")
+
+// }
+
+func generateRandomCode() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	output := base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(b)
+
+	return output, nil
+}
+
 func Login(c *gin.Context) {
-	url := oauthConfig.AuthCodeURL("random-state-string") + "&oauth_version=2"
+	state, err := generateRandomCode()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Error generating random string: %t", err)
+		return
+	}
+
+	url := oauthConfig.AuthCodeURL(state) + "&oauth_version=2"
 	fmt.Println(url)
 	c.Redirect(302, url)
 }
